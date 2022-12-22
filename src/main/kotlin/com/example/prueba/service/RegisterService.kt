@@ -24,21 +24,17 @@ class RegisterService {
     @Autowired
     lateinit var conferenceRepository: ConferenceRepository
 
-    /*fun save (register:Register):Register{
+    fun save (register:Register):Register{
         try {
-            val response = registerRepository.save(register)
-            val responseConference: Conference = conferenceRepository.findById(response.conferenceId)
-            responseConference.apply {
-                totalAttendees = totalAttendees?.plus(register.assisted!!)
-            }
-            conferenceRepository.save(responseConference)
-            return responsez
+            memberRepository.findById(register.memberId)
+                ?: throw Exception("Cliente no existe")
+            return registerRepository.save(register)
         }
         catch (ex:Exception){
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, ex.message)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND,ex.message)
         }
-    }*/
 
+    }
 
 
 
@@ -47,6 +43,10 @@ class RegisterService {
             .withIgnoreNullValues()
             .withMatcher(("assisted"), ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
         return registerRepository.findAll(Example.of(register, matcher), pageable)
+    }
+
+    fun listarConf(memberId:Long?): List<Register>? {
+        return registerRepository.listarConf(memberId)
     }
 
     fun listById (id: Long?): Register?{
@@ -72,6 +72,7 @@ class RegisterService {
             response.apply {
                 assisted=register.assisted
             }
+           // confAsistente(register)
             return registerRepository.save(response)
         }
         catch (ex:Exception){
@@ -84,4 +85,14 @@ class RegisterService {
         registerRepository.deleteById(id!!)
         return true
     }
+
+    /*fun confAsistente (register: Register){
+        val totalCalculated = registerRepository.sumarAsistente(register.conferenceId)
+        val conferenceResponse = conferenceRepository.findById(register.conferenceId)
+        conferenceResponse.apply {
+            totalAttendees=totalCalculated
+        }
+        conferenceRepository.save(conferenceResponse)
+    }*/
+
 }

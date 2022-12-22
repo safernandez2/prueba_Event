@@ -40,6 +40,11 @@ class RegisterController {
         return ResponseEntity(registerService.listById(id), HttpStatus.OK)
     }
 
+    @GetMapping("/conferences/{memberId}")
+    fun listarConf (@PathVariable("memberId") memberId: Long ):ResponseEntity<*>{
+        return ResponseEntity(registerService.listarConf(memberId), HttpStatus.OK)
+    }
+
     @PutMapping
     fun update (@RequestBody register: Register):ResponseEntity<Register>{
         return ResponseEntity(registerService.update(register), HttpStatus.OK)
