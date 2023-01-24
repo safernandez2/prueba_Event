@@ -17,7 +17,15 @@ class MemberService {
     @Autowired
     lateinit var memberRepository: MemberRepository
     fun save (member:Member):Member{
-        return memberRepository.save(member)
+
+        try {
+            member.fullname?.takeIf { it.trim().isNotEmpty() }
+                ?: throw Exception("Fullname no debe ser vacio")
+            return  memberRepository.save(member)
+        }
+        catch (ex:Exception){
+            throw ResponseStatusException(HttpStatus.NOT_FOUND,ex.message)
+        }
     }
     fun list (pageable: Pageable, member: Member):Page<Member>{
         val matcher = ExampleMatcher.matching()

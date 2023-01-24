@@ -17,7 +17,16 @@ class EventService {
     @Autowired
     lateinit var eventRepository: EventRepository
     fun save (event:Event):Event{
-        return eventRepository.save(event)
+
+        try {
+            event.description?.takeIf { it.trim().isNotEmpty() }
+                ?: throw Exception("Description no debe ser vacio")
+
+            return  eventRepository.save(event)
+        }
+        catch (ex:Exception){
+            throw ResponseStatusException(HttpStatus.NOT_FOUND,ex.message)
+        }
     }
     fun list (pageable: Pageable, event: Event):Page<Event>{
         val matcher = ExampleMatcher.matching()
